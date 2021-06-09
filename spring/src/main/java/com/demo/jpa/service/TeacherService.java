@@ -31,4 +31,8 @@ public class TeacherService {
 		return teacherRepository.teachersCollection();
 		 
 	 }
+	 public List<?> teachersCollectionbydepart(){
+		return teacherRepository.teachersCollectionbydepart();			 
+	}
+	 
 }

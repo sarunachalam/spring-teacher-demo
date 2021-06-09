@@ -11,4 +11,7 @@ public interface TeacherRepository extends JpaRepository<Teacher,Long> {
 	
 	@Query("select new map(count(t) as count, t.name as teacherName,t.department.name as department,c.name as course ) from Teacher t JOIN t.courses c group by t.name,t.department.name, c.name order by t.name,c.name ")
 	public List<?> teachersCollection();
+	
+	@Query("select new map(count(t) as count, t.name as teacherName,t.department.name as department ) from Teacher t JOIN t.courses c group by t.name,t.department.name order by t.name ")
+	public List<?> teachersCollectionbydepart();
 }

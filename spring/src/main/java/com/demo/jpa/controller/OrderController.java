@@ -13,10 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.jpa.dto.OrderRequest;
 import com.demo.jpa.entity.Course;
+import com.demo.jpa.entity.Dcourse;
 import com.demo.jpa.entity.Department;
+import com.demo.jpa.entity.Tcourse;
 import com.demo.jpa.entity.Teacher;
 import com.demo.jpa.repository.CourseRepository;
+import com.demo.jpa.repository.DcourseRepository;
 import com.demo.jpa.repository.DepartmentRepository;
+import com.demo.jpa.repository.TcourseRepository;
 import com.demo.jpa.repository.TeacherRepository;
 import com.demo.jpa.service.DepartmentService;
 import com.demo.jpa.service.TeacherService;
@@ -32,17 +36,38 @@ public class OrderController {
 	 @Autowired
 	 private CourseRepository courseRepository;
 	 @Autowired
+	 private TcourseRepository tcourseRepository;
+	 @Autowired
 	 private TeacherService teacherService;
 	 @Autowired
 	 private DepartmentService departmentService;
+	 @Autowired
+	 private DcourseRepository dcourseRepository;
 	 
 	@PostMapping("/teacher/save")
     public Teacher saveTeacher(@RequestBody OrderRequest request){
-       return teacherRepository.saveAndFlush(request.getTeacher());
+		if( request.getTeacher().getId() != 0 ) {
+			Tcourse tcourse = new Tcourse();
+			tcourse.setCourse(request.getTeacher().getCourses().get(0));
+			tcourse.setTeacher(request.getTeacher());
+			tcourseRepository.save(tcourse);
+			return request.getTeacher();
+		} else {			
+			Teacher teacher =  teacherRepository.save(request.getTeacher());
+			return teacher;
+		}	      
     }
 	@PostMapping("/department/save")
-    public Department saveDepartment(@RequestBody OrderRequest request){
-       return departmentRepository.save(request.getDepartment());
+    public Department saveDepartment(@RequestBody OrderRequest request){		
+		if( request.getDepartment().getId() != 0 ) {
+			Dcourse dcourse  = new Dcourse();
+			dcourse.setCourse(request.getDepartment().getCourses().get(0));
+			dcourse.setDepartment(request.getDepartment());
+			dcourseRepository.save(dcourse);
+			return request.getDepartment();
+		} else {			
+			return departmentRepository.save(request.getDepartment());
+		}
     }
 	@PostMapping("/course/save")
     public Course saveCourse(@RequestBody OrderRequest request){
@@ -71,6 +96,11 @@ public class OrderController {
 	@GetMapping("/getTeacher/Details")
 	public List<?> getTeacherDetails(){
 		List<?> objects = teacherService.getDetails();
+		return objects;
+	}
+	@GetMapping("/getTeacher/bydepart")
+	public List<?> getTeacherDetailsbydepart(){
+		List<?> objects = teacherService.teachersCollectionbydepart();
 		return objects;
 	}
 }
